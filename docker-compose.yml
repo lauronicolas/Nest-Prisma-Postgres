@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgresql
+    build:
+      context: .
+      dockerfile: database.dockerfile
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=dbteste
+      - POSTGRES_HOST=127.0.0.1
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    networks:
+      - main-network
+
+
+  teste-main:
+    container_name: teste-main
+    build:
+      context: .
+      dockerfile: teste.dockerfile
+    image: teste/app
+    restart: on-failure
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    networks:
+      - main-network
+    depends_on:
+      - postgres
+      
+networks:
+  main-network:
+    driver: bridge

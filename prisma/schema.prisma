@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id      Int       @id @default(autoincrement())
+  name    String    @db.VarChar(255)
+  Product Product[]
+}
+
+model Product {
+  id         Int      @id @default(autoincrement())
+  name       String?  @db.VarChar(255)
+  code       String   @unique @db.VarChar(255)
+  quantity   Int
+  is_active  Boolean  @default(true)
+  categoryId Int
+  Category   Category @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
